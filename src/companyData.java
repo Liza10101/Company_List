@@ -1,3 +1,11 @@
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import javax.swing.table.DefaultTableModel;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -15,6 +23,7 @@ public class companyData extends javax.swing.JFrame {
      */
     public companyData() {
         initComponents();
+        CompanyTable.setEnabled(true);
     }
 
     /**
@@ -41,11 +50,12 @@ public class companyData extends javax.swing.JFrame {
         editOrUpdateButton = new javax.swing.JButton();
         deleteButton = new javax.swing.JButton();
         tablePanel = new javax.swing.JPanel();
-        booksTableScrollPane = new javax.swing.JScrollPane();
+        CompanyTableScrollPane = new javax.swing.JScrollPane();
         CompanyTable = new javax.swing.JTable();
         searchPanel = new javax.swing.JPanel();
         searchTextField = new javax.swing.JTextField();
         searchLabel = new javax.swing.JLabel();
+        dataBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -202,18 +212,15 @@ public class companyData extends javax.swing.JFrame {
         CompanyTable.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         CompanyTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
-                "Company Name", "Company Address", "Company Contact", "Web Address"
+
             }
         ));
         CompanyTable.setRowHeight(35);
         CompanyTable.setRowMargin(5);
-        booksTableScrollPane.setViewportView(CompanyTable);
+        CompanyTableScrollPane.setViewportView(CompanyTable);
 
         searchTextField.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         searchTextField.setHorizontalAlignment(javax.swing.JTextField.LEFT);
@@ -240,7 +247,7 @@ public class companyData extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(searchLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(searchTextField)
+                .addComponent(searchTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 441, Short.MAX_VALUE)
                 .addContainerGap())
         );
         searchPanelLayout.setVerticalGroup(
@@ -253,6 +260,13 @@ public class companyData extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
+        dataBtn.setText("Show Data");
+        dataBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dataBtnActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout tablePanelLayout = new javax.swing.GroupLayout(tablePanel);
         tablePanel.setLayout(tablePanelLayout);
         tablePanelLayout.setHorizontalGroup(
@@ -260,17 +274,23 @@ public class companyData extends javax.swing.JFrame {
             .addGroup(tablePanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(tablePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(booksTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 589, Short.MAX_VALUE)
-                    .addComponent(searchPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(searchPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(CompanyTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 589, Short.MAX_VALUE))
                 .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, tablePanelLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(dataBtn)
+                .addGap(24, 24, 24))
         );
         tablePanelLayout.setVerticalGroup(
             tablePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, tablePanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(searchPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(42, 42, 42)
+                .addComponent(dataBtn)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(booksTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 711, Short.MAX_VALUE)
+                .addComponent(CompanyTableScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 711, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -289,7 +309,7 @@ public class companyData extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 808, Short.MAX_VALUE)
+            .addGap(0, 873, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(0, 0, Short.MAX_VALUE)
@@ -337,6 +357,33 @@ public class companyData extends javax.swing.JFrame {
     private void searchTextFieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchTextFieldKeyReleased
         search();
     }//GEN-LAST:event_searchTextFieldKeyReleased
+        
+    private void dataBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dataBtnActionPerformed
+        String path = "company.csv";
+        File file = new File(path);
+        
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            String line= br.readLine().trim();
+            String[] columnsName = line.split(",");
+            DefaultTableModel model = (DefaultTableModel)CompanyTable.getModel();
+            model.setColumnIdentifiers(columnsName);
+            
+            Object[] tableLines = br.lines().toArray();
+            
+            for(int i = 0 ; i<tableLines.length ; i++){
+                String lines = tableLines[i].toString().trim();
+                String[] dataRow = lines.split(",");
+                model.addRow(dataRow);
+
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }//GEN-LAST:event_dataBtnActionPerformed
 
     /**
      * @param args the command line arguments
@@ -377,12 +424,13 @@ public class companyData extends javax.swing.JFrame {
     private javax.swing.JLabel CompanyNameLabel;
     private javax.swing.JTextField CompanyNameTextField;
     private javax.swing.JTable CompanyTable;
+    private javax.swing.JScrollPane CompanyTableScrollPane;
     private javax.swing.JLabel addressLabel;
     private javax.swing.JTextField addressText;
-    private javax.swing.JScrollPane booksTableScrollPane;
     private javax.swing.JPanel buttonPanel;
     private javax.swing.JLabel contactLabel;
     private javax.swing.JTextField contactText;
+    private javax.swing.JButton dataBtn;
     private javax.swing.JButton deleteButton;
     private javax.swing.JButton editOrUpdateButton;
     private javax.swing.JPanel inputPanel;
